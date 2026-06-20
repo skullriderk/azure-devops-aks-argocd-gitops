@@ -1,4 +1,4 @@
-![Architecture diagram](architecture.excalidraw.png)
+
 
 # Azure DevOps AKS ArgoCD GitOps Project
 
@@ -12,7 +12,7 @@ The project demonstrates automated container build, image publishing, Kubernetes
 
 ## Architecture
 
-(Add architecture image here)
+![Architecture diagram](architecture.excalidraw.png)
 
 Developer
 |
@@ -160,26 +160,6 @@ Removed:
 - PAT tokens
 - Credentials
 - Old Git history
-
----
-
-## Screenshots
-
-### Azure DevOps Pipeline
-
-(image)
-
-### Azure Container Registry
-
-(image)
-
-### ArgoCD GitOps
-
-(image)
-
-### AKS Deployment
-
-(image)
 
 ---
 
