@@ -1,65 +1,188 @@
-# Example Voting App
+![Architecture diagram](architecture.excalidraw.png)
 
-A simple distributed application running across multiple Docker containers.
+# Azure DevOps AKS ArgoCD GitOps Project
 
-## Getting started
+## Overview
 
-Download [Docker Desktop](https://www.docker.com/products/docker-desktop) for Mac or Windows. [Docker Compose](https://docs.docker.com/compose) will be automatically installed. On Linux, make sure you have the latest version of [Compose](https://docs.docker.com/compose/install/).
+Implemented an end-to-end CI/CD and GitOps workflow for a microservices application using Azure DevOps, Docker, Azure Container Registry, AKS and ArgoCD.
 
-This solution uses Python, Node.js, .NET, with Redis for messaging and Postgres for storage.
+The project demonstrates automated container build, image publishing, Kubernetes manifest updates and GitOps-based deployments.
 
-Run in this directory to build and run the app:
-
-```shell
-docker compose up
-```
-
-The `vote` app will be running at [http://localhost:8080](http://localhost:8080), and the `results` will be at [http://localhost:8081](http://localhost:8081).
-
-Alternately, if you want to run it on a [Docker Swarm](https://docs.docker.com/engine/swarm/), first make sure you have a swarm. If you don't, run:
-
-```shell
-docker swarm init
-```
-
-Once you have your swarm, in this directory run:
-
-```shell
-docker stack deploy --compose-file docker-stack.yml vote
-```
-
-## Run the app in Kubernetes
-
-The folder k8s-specifications contains the YAML specifications of the Voting App's services.
-
-Run the following command to create the deployments and services. Note it will create these resources in your current namespace (`default` if you haven't changed it.)
-
-```shell
-kubectl create -f k8s-specifications/
-```
-
-The `vote` web app is then available on port 31000 on each host of the cluster, the `result` web app is available on port 31001.
-
-To remove them, run:
-
-```shell
-kubectl delete -f k8s-specifications/
-```
+---
 
 ## Architecture
 
-![Architecture diagram](architecture.excalidraw.png)
+(Add architecture image here)
 
-* A front-end web app in [Python](/vote) which lets you vote between two options
-* A [Redis](https://hub.docker.com/_/redis/) which collects new votes
-* A [.NET](/worker/) worker which consumes votes and stores them in…
-* A [Postgres](https://hub.docker.com/_/postgres/) database backed by a Docker volume
-* A [Node.js](/result) web app which shows the results of the voting in real time
+Developer
+|
+v
+Azure Repo/GitHub
+|
+v
+Azure DevOps Pipeline
+|
++--> Docker Build
+|
++--> Push Image to ACR
+|
+v
+Update Kubernetes Manifest
+|
+v
+GitOps Repository
+|
+v
+ArgoCD
+|
+v
+AKS Cluster
 
-## Notes
+---
 
-The voting application only accepts one vote per client browser. It does not register additional votes if a vote has already been submitted from a client.
+## Tech Stack
 
-This isn't an example of a properly architected perfectly designed distributed app... it's just a simple
-example of the various types of pieces and languages you might see (queues, persistent data, etc), and how to
-deal with them in Docker at a basic level.
+- Azure DevOps
+- Azure Kubernetes Service (AKS)
+- Azure Container Registry (ACR)
+- Docker
+- Kubernetes
+- ArgoCD
+- Bash
+- Git
+
+---
+
+## Application Components
+
+Microservices:
+
+- Vote App (Python)
+- Result App (Node.js)
+- Worker Service (.NET)
+- Redis
+- PostgreSQL
+
+---
+
+## CI Pipeline
+
+Azure DevOps pipeline performs:
+
+- Build Docker images
+- Tag images with Build ID
+- Push images to ACR
+
+Pipeline stages:
+
+1. Build and Push
+2. Update Kubernetes Manifest
+
+---
+
+## GitOps Workflow
+
+ArgoCD continuously monitors Kubernetes manifests stored in Git.
+
+When pipeline updates the image tag:
+
+Example:
+
+Before:
+
+image: vote:v1
+
+After:
+
+image: vote:v2
+
+ArgoCD detects the change and synchronizes AKS automatically.
+
+---
+
+## Kubernetes Resources
+
+Created:
+
+- Deployments
+- Services
+- LoadBalancer Services
+- Pods
+- ReplicaSets
+
+---
+
+## Challenges Faced
+
+### 1. AKS unable to pull images from ACR
+
+Problem:
+ImagePullBackOff error.
+
+Solution:
+Configured AKS authentication with Azure Container Registry.
+
+### 2. Application not accessible externally
+
+Problem:
+Pods running but no browser access.
+
+Solution:
+Configured Kubernetes LoadBalancer service.
+
+### 3. Automating image updates
+
+Problem:
+New images were created but manifests contained old tags.
+
+Solution:
+Created Bash automation script to update manifests and push changes.
+
+### 4. Pipeline script issues
+
+Problems:
+
+- CRLF errors
+- Permission issues
+- Incorrect paths
+
+Solutions:
+Used:
+
+sed -i 's/\r$//'
+
+chmod +x
+
+### 5. Secret cleanup before open source
+
+Removed:
+
+- PAT tokens
+- Credentials
+- Old Git history
+
+---
+
+## Screenshots
+
+### Azure DevOps Pipeline
+
+(image)
+
+### Azure Container Registry
+
+(image)
+
+### ArgoCD GitOps
+
+(image)
+
+### AKS Deployment
+
+(image)
+
+---
+
+## Outcome
+
+Successfully created a complete GitOps-based deployment workflow where application changes automatically flow from source code to Kubernetes deployment.
